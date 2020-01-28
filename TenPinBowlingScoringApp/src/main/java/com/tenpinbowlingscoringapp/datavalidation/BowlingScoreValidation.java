@@ -11,9 +11,9 @@ public class BowlingScoreValidation implements Validation {
 		List<Player> players = (List<Player>) object;
 		String errorMessage = "";
 		if (players.get(0).getName() == null || players.get(0).getName() == "") {
-			errorMessage = "Player's name, incorrect";
+			errorMessage = "Incorrect line";
 		} else if (players.size() < 11 || players.size() > 21) {
-			errorMessage = "Total pinfalls for the player" + players.get(0).getName() + ", incorrect";
+			errorMessage = "Total pinfalls incorrect";
 		} else {
 			for (Player auxiliaryPlayer : players) {
 				if (auxiliaryPlayer.getFrames() == null) {
@@ -26,16 +26,16 @@ public class BowlingScoreValidation implements Validation {
 							try {
 								int value = Integer.parseInt(firstPinfallCurrentFrames);
 								if (value < 0 || value > 10) {
-									errorMessage = "The value" + firstPinfallCurrentFrames + "to pinfall, incorrect";
+									errorMessage = "The pinfall value, incorrect. Out of range";
 									break;
 								}
 							} catch (Exception e) {
-								errorMessage = "The value" + firstPinfallCurrentFrames + "to pinfall, incorrect";
+								errorMessage = "The pinfall value, incorrect. It's not an integer";
 								break;
 							}
 						}
 					} else {
-						errorMessage = "The value" + firstPinfallCurrentFrames + "to pinfall, incorrect";
+						errorMessage = "The pinfall value, incorrect. It is not a digit or the letter F";
 						break;
 					}
 				}

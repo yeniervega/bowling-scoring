@@ -15,13 +15,14 @@ import com.tenpinbowlingscoringapp.datavalidation.ValidationContext;
 import com.tenpinbowlingscoringapp.entity.Player;
 import com.tenpinbowlingscoringapp.useful.UsefulClass;
 
-public class BowlingTransformData implements TransformData<Optional<Stream<String>>, Optional<List<Player>>> {
+public class BowlingTransformData implements TransformData<List<String>, Optional<List<Player>>> {
 
 	@Override
-	public Optional<List<Player>> transformData(Optional<Stream<String>> scoreData) throws Exception {
+	public Optional<List<Player>> transformData(List<String> scoreData) throws Exception {
 
-		if (scoreData.isPresent()) {
-			Stream<Player> players = scoreData.get().map(x -> UsefulClass.getPlayer(x));
+		//if (scoreData.isPresent()) {
+		if(scoreData!=null && scoreData.size()>0) {
+			Stream<Player> players = scoreData.stream().map(x -> UsefulClass.getPlayer(x));
 			Map<String, List<Player>> groupingPlayers = groupPinfall(players);
 			if (groupingPlayers.size() < 2) {
 				throw new Exception("There must be two or more players");
@@ -32,8 +33,9 @@ public class BowlingTransformData implements TransformData<Optional<Stream<Strin
 				TransformData<List<Player>, Player> transformData = new FrameTransformData();
 				TransformDataContext<List<Player>, Player> transformDataContext = new TransformDataContext<List<Player>, Player>(
 						transformData);
+				List<Player> validationPlayers;
 				for (Map.Entry<String, List<Player>> auxiliary : groupingPlayers.entrySet()) {
-					List<Player> validationPlayers = auxiliary.getValue();
+					validationPlayers = auxiliary.getValue();
 					String errorMessage = validationContext.Validate(validationPlayers);
 					if (errorMessage != "") {
 						throw new Exception(errorMessage);
@@ -50,7 +52,7 @@ public class BowlingTransformData implements TransformData<Optional<Stream<Strin
 		}
 	}
 
-	public Map<String, List<Player>> groupPinfall(Stream<Player> players) {
+	Map<String, List<Player>> groupPinfall(Stream<Player> players) {
 		Map<String, List<Player>> groupingPinfall = players.collect(Collectors.groupingBy(Player::getName,
 				LinkedHashMap::new, Collectors.mapping(Function.identity(), Collectors.toList())));
 		return groupingPinfall;

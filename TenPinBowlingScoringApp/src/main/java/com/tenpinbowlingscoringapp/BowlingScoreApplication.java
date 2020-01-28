@@ -2,7 +2,7 @@ package com.tenpinbowlingscoringapp;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
+
 import com.tenpinbowlingscoringapp.dataaccess.DataSource;
 import com.tenpinbowlingscoringapp.dataaccess.DataSourceContext;
 import com.tenpinbowlingscoringapp.dataaccess.FileAsDataSource;
@@ -27,50 +27,51 @@ public class BowlingScoreApplication {
 	public static void main(String[] args) {
 
 		try {
+			String Key=args[0];
 			// get DataSource
 			DataSource<String> internalProperties = new InternalPropertiesAsDataSource("/settings.properties",
-					"filePath");
+					Key);
 			DataSourceContext<String> dataSourceContext = new DataSourceContext<String>(internalProperties);
 			String sourceUrl = (String) dataSourceContext.getData();
-			DataSource<Optional<Stream<String>>> fileData = new FileAsDataSource(sourceUrl);
-			DataSourceContext<Optional<Stream<String>>> dataSourceContext1 = new DataSourceContext<Optional<Stream<String>>>(
+			DataSource <List<String>> fileData = new FileAsDataSource(sourceUrl);
+			DataSourceContext<List<String>> dataSourceContext1 = new DataSourceContext<List<String>>(
 					fileData);
-			Optional<Stream<String>> scoring = (Optional<Stream<String>>) dataSourceContext1.getData();
+			List<String> scoring =dataSourceContext1.getData();		
+			
+			if(scoring!=null && scoring.size()>0)
+			{
+				// Data Transformation
+				TransformData<List<String>, Optional<List<Player>>> bowlingTransformData = new BowlingTransformData();
+				TransformDataContext<List<String>, Optional<List<Player>>> transformDataContext = new TransformDataContext<List<String>, Optional<List<Player>>>(
+						bowlingTransformData);
+				Optional<List<Player>> bowlingPlayers = transformDataContext.getTransformatedData(scoring);
 
-			// Data Transformation
-			TransformData<Optional<Stream<String>>, Optional<List<Player>>> bowlingTransformData = new BowlingTransformData();
-			TransformDataContext<Optional<Stream<String>>, Optional<List<Player>>> transformDataContext = new TransformDataContext<Optional<Stream<String>>, Optional<List<Player>>>(
-					bowlingTransformData);
-			Optional<List<Player>> bowlingPlayers = transformDataContext.getTransformatedData(scoring);
-
-			// Impresión
-			if (bowlingPlayers.isPresent()) {
-				List<Player> players = bowlingPlayers.get();
-				PrinterFactory factory = new LinePrinterFactory();
-				DataPrinting dataPrinting = new ScoringBowlingPrinting(factory);
-				String header = "Frame\t\t1\t\t2\t\t3\t\t4\t\t5\t\t6\t\t7\t\t8\t\t9\t\t10\n";
-				dataPrinting.print(header);
-				String lineBreak = "\n";
-				PrinterFactory pinfallPrinterFactory = new PinfallPrinterFactory();
-				DataPrinting pinfallDataPrinting = new ScoringBowlingPrinting(pinfallPrinterFactory);
-				PrinterFactory scorePrinterFactory = new ScorePrinterFactory();
-				DataPrinting scoreDataPrinting = new ScoringBowlingPrinting(scorePrinterFactory);
-				for (Player player : players) {
-					dataPrinting.print(lineBreak);
-					dataPrinting.print("Pinfalls");
-					List<Frame> frames = player.getFrames();
-					for (Frame frame : frames) {
-						pinfallDataPrinting.print(frame);
+				// Impresión
+				if (bowlingPlayers.isPresent()) {
+					List<Player> players = bowlingPlayers.get();
+					PrinterFactory factory = new LinePrinterFactory();
+					DataPrinting dataPrinting = new ScoringBowlingPrinting(factory);
+					String header = "Frame\t\t1\t\t2\t\t3\t\t4\t\t5\t\t6\t\t7\t\t8\t\t9\t\t10\n";
+					dataPrinting.print(header);
+					String lineBreak = "\n";
+					PrinterFactory pinfallPrinterFactory = new PinfallPrinterFactory();
+					DataPrinting pinfallDataPrinting = new ScoringBowlingPrinting(pinfallPrinterFactory);
+					PrinterFactory scorePrinterFactory = new ScorePrinterFactory();
+					DataPrinting scoreDataPrinting = new ScoringBowlingPrinting(scorePrinterFactory);
+					for (Player player : players) {
+						dataPrinting.print(lineBreak);
+						List<Frame> frames = player.getFrames();
+						pinfallDataPrinting.print(frames);
+						dataPrinting.print(lineBreak);
+						scoreDataPrinting.print(frames);
+						dataPrinting.print(lineBreak);
 					}
-					dataPrinting.print(lineBreak);
-					dataPrinting.print("Score");
-					for (Frame frame : frames) {
-						scoreDataPrinting.print(frame);
-					}
-					dataPrinting.print(lineBreak);
+				} else {
+					System.out.println("Invalid scoring!!!!");
 				}
-			} else {
-				System.out.println("Invalid scoring!!!!");
+			}
+			else {
+				System.out.println("Could not get data to process");
 			}
 		} catch (Exception e) {
 			System.out.println(e.toString());

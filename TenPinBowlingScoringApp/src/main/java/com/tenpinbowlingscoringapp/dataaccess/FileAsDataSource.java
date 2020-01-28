@@ -4,10 +4,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class FileAsDataSource implements DataSource<Optional<Stream<String>>> {
+public class FileAsDataSource implements DataSource<List<String>> {
 
 	private String path;
 
@@ -16,14 +17,15 @@ public class FileAsDataSource implements DataSource<Optional<Stream<String>>> {
 		this.path = path;
 	}
 
-	public Optional<Stream<String>> getData() {
-		Stream<String> streamResponse = null;
+	public List<String> getData() {
+		List<String> streamResponse = null;
 		Path path = Paths.get(this.path);
 		try (Stream<String> stream = Files.lines(path)) {
-			streamResponse = stream;
+			streamResponse=  stream.collect(Collectors.toList());
+			return streamResponse;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return Optional.of(streamResponse);
+		return streamResponse;
 	}
 }

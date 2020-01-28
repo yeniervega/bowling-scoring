@@ -24,7 +24,7 @@ public class Player {
 	public void setFrames(List<Frame> frames) {
 		this.frames = frames;
 	}
-	
+
 	public void calculationScore() {
 		Integer score = 0;
 		Integer pinfallsSummationPerFrame;
@@ -34,43 +34,32 @@ public class Player {
 			strikeOrSpareBonification = 0;
 			Frame currentFrame = frames.get(i);
 			if (i < frames.size() - 1
-					&& (currentFrame.getFirstPinfall() == "X" || currentFrame.getSecondPinfall() == "//")) {
+					&& (currentFrame.getFirstPinfall() == "X" || currentFrame.getSecondPinfall() == "/")) {
 				strikeOrSpareBonification = getStrikeOrSpareBonification(i);
 			}
-			pinfallsSummationPerFrame = getPinfallsSummationPerFrame(currentFrame);
+			pinfallsSummationPerFrame = UsefulClass.getPinfallsSummationPerFrame(currentFrame);
 			score = score + pinfallsSummationPerFrame + strikeOrSpareBonification;
 			frames.get(i).setScore(score);
 		}
 	}
-	
-	 Integer getStrikeOrSpareBonification( Integer currentPosition) {
+
+	Integer getStrikeOrSpareBonification(Integer currentPosition) {
+		Integer nextPosition = currentPosition + 1;
 		Integer strikeOrSpareBonification = 0;
 		Frame currentFrame = frames.get(currentPosition);
-		String nextFrameFirstPinfall = frames.get(currentPosition + 1).getFirstPinfall();
+		String nextFrameFirstPinfall = frames.get(nextPosition).getFirstPinfall();
 		strikeOrSpareBonification = UsefulClass.getRealValuePinfall(nextFrameFirstPinfall);
 		if (currentFrame.getFirstPinfall() == "X") {
-			if (nextFrameFirstPinfall == "X") {
+			if (nextFrameFirstPinfall == "X" && ((nextPosition) < frames.size() - 1)) {
 				String secondFrameFirstPinfall = frames.get(currentPosition + 2).getFirstPinfall();
 				strikeOrSpareBonification += UsefulClass.getRealValuePinfall(secondFrameFirstPinfall);
-			} else if (frames.get(currentPosition + 1).getSecondPinfall() == "//") {
+			} else if (frames.get(nextPosition).getSecondPinfall() == "/") {
 				strikeOrSpareBonification = 10;
 			} else {
-				String nextFrameSecondPinfall = frames.get(currentPosition + 1).getSecondPinfall();
+				String nextFrameSecondPinfall = frames.get(nextPosition).getSecondPinfall();
 				strikeOrSpareBonification += UsefulClass.getRealValuePinfall(nextFrameSecondPinfall);
 			}
 		}
 		return strikeOrSpareBonification;
-	}
-	
-	 Integer getPinfallsSummationPerFrame(Frame frame) {
-		Integer summation = 0;
-		Integer realFirstPinfall = UsefulClass.getRealValuePinfall(frame.getFirstPinfall());
-		Integer realSecondPinfall = UsefulClass.getRealValuePinfall(frame.getSecondPinfall());
-		if (realSecondPinfall == -1) {
-			realSecondPinfall = 10 - realFirstPinfall;
-		}
-		Integer realThirdPinfall = UsefulClass.getRealValuePinfall(frame.getThirdPinfall());
-		summation = realFirstPinfall + realSecondPinfall + realThirdPinfall;
-		return summation;
 	}
 }
