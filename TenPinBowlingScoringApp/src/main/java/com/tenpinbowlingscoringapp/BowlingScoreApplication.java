@@ -51,7 +51,7 @@ public class BowlingScoreApplication {
 					List<Player> players = bowlingPlayers.get();
 					PrinterFactory factory = new LinePrinterFactory();
 					DataPrinting dataPrinting = new ScoringBowlingPrinting(factory);
-					String header = "Frame\t\t1\t\t2\t\t3\t\t4\t\t5\t\t6\t\t7\t\t8\t\t9\t\t10\n";
+					String header = "Frame\t\t1\t\t2\t\t3\t\t4\t\t5\t\t6\t\t7\t\t8\t\t9\t\t10";
 					dataPrinting.print(header);
 					String lineBreak = "\n";
 					PrinterFactory pinfallPrinterFactory = new PinfallPrinterFactory();
@@ -59,12 +59,10 @@ public class BowlingScoreApplication {
 					PrinterFactory scorePrinterFactory = new ScorePrinterFactory();
 					DataPrinting scoreDataPrinting = new ScoringBowlingPrinting(scorePrinterFactory);
 					for (Player player : players) {
-						dataPrinting.print(lineBreak);
+						dataPrinting.print(player.getName());
 						List<Frame> frames = player.getFrames();
 						pinfallDataPrinting.print(frames);
-						dataPrinting.print(lineBreak);
 						scoreDataPrinting.print(frames);
-						dataPrinting.print(lineBreak);
 					}
 				} else {
 					System.out.println("Invalid scoring!!!!");

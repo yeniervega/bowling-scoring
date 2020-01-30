@@ -9,7 +9,7 @@ public class BowlingScoreApplicationTest {
 	@Test
 	void MainTest() {
 		args=new String[10];
-		args[0]="filePath";
+		args[0]="filePath1";
 		BowlingScoreApplication.main(args);
 	}
 

@@ -10,7 +10,7 @@ public class BowlingScoreValidation implements Validation {
 	public String Validate(Object object) {
 		List<Player> players = (List<Player>) object;
 		String errorMessage = "";
-		if (players.get(0).getName() == null || players.get(0).getName() == "") {
+		if (players.get(0).getName()==null || players.get(0).getName().equals("")) {
 			errorMessage = "Incorrect line";
 		} else if (players.size() < 11 || players.size() > 21) {
 			errorMessage = "Total pinfalls incorrect";
@@ -21,7 +21,7 @@ public class BowlingScoreValidation implements Validation {
 				} else {
 					String firstPinfallCurrentFrames = auxiliaryPlayer.getFrames().get(0).getFirstPinfall();
 					if (Character.isDigit(firstPinfallCurrentFrames.charAt(0))
-							|| firstPinfallCurrentFrames.toUpperCase() == "F") {
+							|| firstPinfallCurrentFrames.toUpperCase().equals("F")) {
 						if (Character.isDigit(firstPinfallCurrentFrames.charAt(0))) {
 							try {
 								int value = Integer.parseInt(firstPinfallCurrentFrames);
